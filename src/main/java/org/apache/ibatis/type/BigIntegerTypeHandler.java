@@ -29,11 +29,15 @@ public class BigIntegerTypeHandler extends BaseTypeHandler<BigInteger> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, BigInteger parameter, JdbcType jdbcType) throws SQLException {
+    // PreparedStatement 对象 根据索引位置设置好参数
     ps.setBigDecimal(i, new BigDecimal(parameter));
   }
 
+  // getNullableResult 的通用逻辑就是 先判断是否位空，如果是空，直接返回空，否则讲起转换为对应的数据类型，比如BigInteger
+  // ResultSet中因为没有getBigInteger方法，所以需要先通过getBigDecimal 然后再转换为bigInteger
   @Override
   public BigInteger getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    //
     BigDecimal bigDecimal = rs.getBigDecimal(columnName);
     return bigDecimal == null ? null : bigDecimal.toBigInteger();
   }
