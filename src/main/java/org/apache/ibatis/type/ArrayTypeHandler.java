@@ -41,6 +41,7 @@ public class ArrayTypeHandler extends BaseTypeHandler<Object> {
   private static final ConcurrentHashMap<Class<?>, String> STANDARD_MAPPING;
 
   static {
+    // 构建一个kv结构存储java中的数据类型和jdbc中的数据类型的一个映射关系
     STANDARD_MAPPING = new ConcurrentHashMap<>();
     STANDARD_MAPPING.put(BigDecimal.class, JdbcType.NUMERIC.name());
     STANDARD_MAPPING.put(BigInteger.class, JdbcType.BIGINT.name());
@@ -78,15 +79,15 @@ public class ArrayTypeHandler extends BaseTypeHandler<Object> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType)
-      throws SQLException {
+    throws SQLException {
     if (parameter instanceof Array) {
       // it's the user's responsibility to properly free() the Array instance
       ps.setArray(i, (Array) parameter);
     } else {
       if (!parameter.getClass().isArray()) {
         throw new TypeException(
-            "ArrayType Handler requires SQL array or java array parameter and does not support type "
-                + parameter.getClass());
+          "ArrayType Handler requires SQL array or java array parameter and does not support type "
+            + parameter.getClass());
       }
       Class<?> componentType = parameter.getClass().getComponentType();
       String arrayTypeName = resolveTypeName(componentType);

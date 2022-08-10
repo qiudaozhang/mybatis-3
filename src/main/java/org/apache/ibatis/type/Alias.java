@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * <p>
  * <b>How to use:</b>
  * <pre>
- * &#064;Alias("Email")
+ * &#064;Alias("Email")  使用场景： 如果pojo的名称和数据库不一致，可以通过别名进行指定，达到一个映射的效果
  * public class UserEmail {
  *   // ...
  * }
