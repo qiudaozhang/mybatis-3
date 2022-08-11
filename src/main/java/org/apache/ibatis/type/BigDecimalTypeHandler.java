@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ * ResultSet 本就支持BigDecimal 所以这个类型处理器很简单了
  */
 public class BigDecimalTypeHandler extends BaseTypeHandler<BigDecimal> {
 

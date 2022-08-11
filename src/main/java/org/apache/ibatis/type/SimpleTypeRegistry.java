@@ -29,6 +29,8 @@ public class SimpleTypeRegistry {
   private static final Set<Class<?>> SIMPLE_TYPE_SET = new HashSet<>();
 
   static {
+    // 简单类型注册  ，除了常见的8个包装类之外，还注册了 字符串， 8之前的日期， 大整数，精准十进制数 额外的4个个类型 ，另外还有一个大Class类型
+//    共计 13 个简单类型
     SIMPLE_TYPE_SET.add(String.class);
     SIMPLE_TYPE_SET.add(Byte.class);
     SIMPLE_TYPE_SET.add(Short.class);
@@ -50,7 +52,7 @@ public class SimpleTypeRegistry {
 
   /*
    * Tells us if the class passed in is a known common type
-   *
+   * 判断这个类型是否位简单类型（LocalDate LocalDateTime是否考虑放进去呢？）
    * @param clazz The class to check
    * @return True if the class is known
    */

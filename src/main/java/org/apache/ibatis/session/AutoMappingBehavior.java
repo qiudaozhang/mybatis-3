@@ -17,7 +17,7 @@ package org.apache.ibatis.session;
 
 /**
  * Specifies if and how MyBatis should automatically map columns to fields/properties.
- *
+ * 描述 mybatis关于自动映射数据列与java中的字段或者属性行为的一个枚举
  * @author Eduardo Macarron
  */
 public enum AutoMappingBehavior {

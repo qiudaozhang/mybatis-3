@@ -19,6 +19,8 @@ import java.sql.Connection;
 
 /**
  * Creates an {@link SqlSession} out of a connection or a DataSource
+ * 数据库连接或者数据都一个工厂，主要是定义了各种获取Sql会话的方法（实现不同的行为）
+ * 具体和数据库打交道的是SqlSession
  *
  * @author Clinton Begin
  */

@@ -77,6 +77,7 @@ public final class TypeHandlerRegistry {
    * @since 3.5.4
    */
   public TypeHandlerRegistry(Configuration configuration) {
+    // 注册 一堆类型处理器 ，这个注册最终就是存储了一个kv到map中（不同map实现类型不一样）
     this.unknownTypeHandler = new UnknownTypeHandler(configuration);
 
     register(Boolean.class, new BooleanTypeHandler());

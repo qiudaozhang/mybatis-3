@@ -42,6 +42,7 @@ import org.apache.ibatis.session.SqlSession;
 /**
  * The default implementation for {@link SqlSession}.
  * Note that this class is not Thread-Safe.
+ * 会话的默认实现，  这个类非线程安全
  *
  * @author Clinton Begin
  */
@@ -54,6 +55,12 @@ public class DefaultSqlSession implements SqlSession {
   private boolean dirty;
   private List<Cursor<?>> cursorList;
 
+  /**
+   *
+   * @param configuration 配置
+   * @param executor 执行器 （）这个肯定是服务和jdbc直接交互的）
+   * @param autoCommit 是否自动提交事务
+   */
   public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {
     this.configuration = configuration;
     this.executor = executor;

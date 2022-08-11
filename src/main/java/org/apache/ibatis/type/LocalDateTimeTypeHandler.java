@@ -22,19 +22,21 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 /**
- * @since 3.4.5
  * @author Tomas Rohovsky
+ * 对JAVA8的时间支持
+ * @since 3.4.5
  */
 public class LocalDateTimeTypeHandler extends BaseTypeHandler<LocalDateTime> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, LocalDateTime parameter, JdbcType jdbcType)
-          throws SQLException {
+    throws SQLException {
     ps.setObject(i, parameter);
   }
 
   @Override
   public LocalDateTime getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    // 这些类型的数据都通过getObject的第二个参数指定为一个 Class类型，类类型
     return rs.getObject(columnName, LocalDateTime.class);
   }
 

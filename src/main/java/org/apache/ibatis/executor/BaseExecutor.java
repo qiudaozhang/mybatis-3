@@ -46,6 +46,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 基础执行器
  */
 public abstract class BaseExecutor implements Executor {
 
@@ -55,7 +56,7 @@ public abstract class BaseExecutor implements Executor {
   protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
-  protected PerpetualCache localCache;
+  protected PerpetualCache localCache; // 本地缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -141,29 +142,39 @@ public abstract class BaseExecutor implements Executor {
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
     if (closed) {
+      // 如果已经关闭了，肯定是不正常
       throw new ExecutorException("Executor was closed.");
     }
+    // 如果查询栈为0 并且 映射的语句需要刷新缓存，则清理本地缓存
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
       clearLocalCache();
     }
     List<E> list;
     try {
+      // 开始查询的， 首先查询栈自增
       queryStack++;
+      // 如果结果处理器为空，直接从缓存里面取，否则直接赋值为空
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
+        // 如果列表不是空，说明从缓存里面取了，此时再处理一下本地缓存输出参数的问题
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
+        // 如果缓存中没有，那就只能从数据库中查询了
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
+      // 最后再把查询栈自减
       queryStack--;
     }
+    // 如果查询栈为0
     if (queryStack == 0) {
+      // 遍历?? 暂时还不知道是什么
       for (DeferredLoad deferredLoad : deferredLoads) {
         deferredLoad.load();
       }
       // issue #601
       deferredLoads.clear();
+      // 如果 缓存的范围为语句级别 ，清理本地缓存
       if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
         // issue #482
         clearLocalCache();
@@ -272,10 +283,10 @@ public abstract class BaseExecutor implements Executor {
   protected abstract List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException;
 
   protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)
-      throws SQLException;
+    throws SQLException;
 
   protected abstract <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
-      throws SQLException;
+    throws SQLException;
 
   protected void closeStatement(Statement statement) {
     if (statement != null) {
@@ -290,12 +301,10 @@ public abstract class BaseExecutor implements Executor {
   /**
    * Apply a transaction timeout.
    *
-   * @param statement
-   *          a current statement
-   * @throws SQLException
-   *           if a database access error occurs, this method is called on a closed <code>Statement</code>
-   * @since 3.4.0
+   * @param statement a current statement
+   * @throws SQLException if a database access error occurs, this method is called on a closed <code>Statement</code>
    * @see StatementUtil#applyTransactionTimeout(Statement, Integer, Integer)
+   * @since 3.4.0
    */
   protected void applyTransactionTimeout(Statement statement) throws SQLException {
     StatementUtil.applyTransactionTimeout(statement, statement.getQueryTimeout(), transaction.getTimeout());
